@@ -31,17 +31,28 @@ class FCNet(nn.Module):
         return out
 
 class NERF_W(nn.Module):
-    def __init__(self, dataset):
+    def __init__(self, dataset, imageSize, embeddingSize = 20, useZ = True): # Assume image size is a square
         super(NERF_W, self).__init__()
-        self.Z = nn.Parameter( torch.zeros( len( dataset. images ) ) ) # requires_grad = True by default.
+        self.useZ = useZ
+
+        self.Z = nn.Parameter( torch.zeros( len( dataset. images ), embeddingSize ) ) # requires_grad = True by default.
 
         self.pe = PE(num_res=10)
-        self.mlp = MLP(42, 3, 256, 9)
-    def forward(self, x, index):
+
+        if (self.useZ):
+            self.mlp = MLP(42 + embeddingSize, 3, imageSize[0], 9)
+        else:
+            self.mlp = MLP(42, 3, imageSize[0], 9)
+
+    def forward(self, x, index, interpolate = False, interpWeight = 0.5):
         out = self.pe(x)
-        #  print("index:", index)
-        #  print("out dim:", out.dim())
-        #  print("z dim:", self.Z[index].dim())
-        #  test = torch.cat((x,self.Z[index]), dim=-1)
+
+        if (self.useZ):
+            if (interpolate):
+                Z = torch.lerp(self.Z[index], self.Z[index + 1], interpWeight)
+            else:
+                Z = self.Z[index]
+            out = torch.cat((out, Z), dim=-1)
+
         out = self.mlp(out)
         return out
