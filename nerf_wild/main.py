@@ -24,8 +24,8 @@ class ImagesDataset(Dataset):
     def __init__(self, images_path, image_size, device = 'cuda'):
         self.totalPixelsPerImage = image_size[0] * image_size[1]
         self.images = []
-        self.rgb_vals = torch.zeros(0)
-        self.coords = torch.zeros(0)
+        self.rgb_vals = torch.zeros(0).to(device)
+        self.coords = torch.zeros(0).to(device)
 
         for path in Path(f'{images_path}').glob('**/*'):
             _, ext = os.path.splitext(path)
@@ -49,7 +49,7 @@ class ImagesDataset(Dataset):
         return self.coords[coordIndex], self.rgb_vals[idx], imageIndex
 
 class Trainer:
-    def __init__(self, imagePath, imageSize, use_pe = True, device = 'cpu'):
+    def __init__(self, imagePath, imageSize, device = 'cuda'):
         self.imageSize = imageSize
 
         self.dataset = ImagesDataset(imagePath, imageSize, device)
@@ -58,7 +58,7 @@ class Trainer:
         self.useZ = True
 
         if (self.useZ):
-            self.embeddingSize = 100
+            self.embeddingSize = 3
         else:
             self.embeddingSize = 0
 
@@ -68,7 +68,7 @@ class Trainer:
         self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
         self.criterion = torch.nn.MSELoss()
 
-        self.nepochs = 20
+        self.nepochs = 200
 
 
     def run(self):
@@ -85,10 +85,9 @@ class Trainer:
             self.model.eval()
             with torch.no_grad():
                 coords = self.dataset.coords
-                pred0 = self.model(coords, torch.IntTensor([0 for _ in range(len(coords))]), True, 0.25)
+                pred0 = self.model(coords, torch.IntTensor([0 for _ in range(len(coords))]), True, 0.)
                 pred1 = self.model(coords, torch.IntTensor([0 for _ in range(len(coords))]), True, 0.5)
                 interp = self.model(coords, torch.IntTensor([0 for _ in range(len(coords))]), True, 0.72)
-                gt = self.dataset.rgb_vals
 
             pbar.set_description(f'Epoch: {epoch}')
             pred0 = pred0.cpu().numpy().reshape(*self.dataset.images[0].size[::-1], 3)
@@ -137,9 +136,10 @@ class Trainer:
         cv2.waitKey(1)
 
 if __name__ == '__main__':
-    image_path = './bran_gate'
+    image_path = './levada'
     image_size = (256, 256)
-    device = 'cpu'
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    print("DEVICE:", device)
 
     trainer = Trainer(image_path, image_size, device)
     print('# params: {}'.format(trainer.get_num_params()))
