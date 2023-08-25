@@ -55,10 +55,10 @@ class Trainer:
         self.dataset = ImagesDataset(imagePath, imageSize, device)
         self.dataloader = DataLoader(self.dataset, batch_size=4096, shuffle=True)
 
-        self.useZ = False
+        self.useZ = True
 
         if (self.useZ):
-            self.embeddingSize = 200
+            self.embeddingSize = 100
         else:
             self.embeddingSize = 0
 
