@@ -49,7 +49,9 @@ class NERF_W(nn.Module):
 
         if (self.useZ):
             if (interpolate):
-                Z = torch.lerp(self.Z[index], self.Z[index + 1], interpWeight)
+                #  Z = torch.lerp(self.Z[index], self.Z[index + 7], interpWeight)
+                Z = torch.lerp(torch.min(self.Z), torch.max(self.Z), interpWeight)
+                Z = Z.repeat([index.size()[0], 1])
             else:
                 Z = self.Z[index]
             out = torch.cat((out, Z), dim=-1)
