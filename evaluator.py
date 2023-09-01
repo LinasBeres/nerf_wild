@@ -21,7 +21,7 @@ class Evaluator:
         self.name = name
         self.imageSize = imageSize
 
-        self.model = torch.load("model" + self.name).to(device)
+        self.model = torch.load("model" + self.name, map_location=torch.device(device)).to(device)
         self.model.eval()
 
         self.coords = get_coords(imageSize[0], normalize=True).reshape(-1, 2).to(device)
