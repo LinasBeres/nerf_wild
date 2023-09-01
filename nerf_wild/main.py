@@ -21,12 +21,14 @@ if __name__ == '__main__':
     #  trainer = Trainer("lake-small-small-256", image_path, image_size, device)
     #  trainer.run()
 
-    image_path = './lake-small'
-    trainer = Trainer("lake-small-256", image_path, image_size, device)
-
-    image_path = '/home/lberesna/Downloads/lake'
-    trainer = Trainer("lake-256", image_path, image_size, device)
+    #  image_path = './lake-small'
+    #  trainer = Trainer("lake-small-256", image_path, image_size, device)
+    #  trainer.run()
+#
+    #  image_path = '/home/lberesna/Downloads/lake'
+    #  trainer = Trainer("lake-256", image_path, image_size, device)
+    #  trainer.run()
 
     #  image_size = (512, 512)
-    #  evaluator = Evaluator("lake-small-small", image_path, image_size, device)
-    #  evaluator.plot()
+    evaluator = Evaluator("lake-small-256", image_size, device)
+    evaluator.plot()

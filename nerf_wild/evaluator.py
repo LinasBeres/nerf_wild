@@ -17,7 +17,7 @@ import matplotlib.pyplot as plt
 from matplotlib.widgets import Slider, Button
 
 class Evaluator:
-    def __init__(self, name, imagePath, imageSize, device = 'cuda'):
+    def __init__(self, name, imageSize, device = 'cuda'):
         self.name = name
         self.imageSize = imageSize
 
