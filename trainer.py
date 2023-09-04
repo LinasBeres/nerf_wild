@@ -64,7 +64,7 @@ class Trainer:
         self.model = NERF_W(self.dataset, imageSize, self.embeddingSize, self.useZ).to(device)
 
         lr = 1e-3
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-5) # weight decay for L2 regularisation
         self.criterion = torch.nn.MSELoss()
 
         self.nepochs = 200

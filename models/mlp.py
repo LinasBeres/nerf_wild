@@ -1,6 +1,9 @@
 import torch
 import torch.nn as nn
 
+import numpy as np
+import scipy
+
 from models.pe import PE
 
 class MLP(nn.Module):
@@ -49,7 +52,6 @@ class NERF_W(nn.Module):
 
         if (self.useZ):
             if (interpolate):
-                #  Z = torch.lerp(self.Z[index], self.Z[index + 7], interpWeight)
                 Z = torch.lerp(torch.min(self.Z), torch.max(self.Z), interpWeight)
                 Z = Z.repeat([index.size()[0], 1])
             else:
