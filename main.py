@@ -31,4 +31,4 @@ if __name__ == '__main__':
 
     image_size = (256, 256)
     evaluator = Evaluator("lake-small-small-256", image_size, device)
-    evaluator.plot()
+    evaluator.visualiseAll()

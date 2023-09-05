@@ -1,4 +1,5 @@
 import os
+import time
 import torch
 from torchvision import models, transforms
 from torch.utils.data import Dataset, DataLoader
@@ -92,4 +93,24 @@ class Evaluator:
         plt.show()
 
     def visualiseAll(self):
-        pass
+        plt.ion()
+
+        fig, axs = plt.subplots(1, 1)
+
+        im = axs.imshow(image)
+
+        axs.set_yticklabels([])
+        axs.set_xticklabels([])
+
+        plt.axis('off')
+
+        fig.canvas.draw()
+
+        for i in range(0, 100, 1):
+            print(i)
+
+            image = self.getImage(i / 100)
+
+            axs.imshow(image)
+            fig.canvas.draw()
+            fig.canvas.flush_events()

@@ -64,8 +64,11 @@ class Trainer:
         self.model = NERF_W(self.dataset, imageSize, self.embeddingSize, self.useZ).to(device)
 
         lr = 1e-3
-        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr, weight_decay=1e-5) # weight decay for L2 regularisation
+        self.optimizer = torch.optim.Adam(self.model.parameters(), lr=lr)
         self.criterion = torch.nn.MSELoss()
+
+        self.l1_weight = 1e-3
+        self.l2_weight = 1e-3
 
         self.nepochs = 200
 
@@ -79,10 +82,16 @@ class Trainer:
         for epoch in pbar:
             self.model.train()
             for coord, rgb_vals, imageIndex in self.dataloader:
+                # Computer regularisation for Z (latent variable) parameter
+                l1_penalty = self.l1_weight * (self.model.Z.abs().sum())
+                l2_penalty = self.l2_weight * ((self.model.Z ** 2).sum())
+
                 self.optimizer.zero_grad()
                 pred = self.model(coord, imageIndex)
+
                 loss = self.criterion(pred, rgb_vals)
-                loss.backward()
+                loss_with_penalty = loss + l1_penalty + l2_penalty
+                loss_with_penalty.backward()
                 self.optimizer.step()
 
             torch.save(self.model, "model" + self.name)
