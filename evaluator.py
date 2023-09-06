@@ -97,6 +97,8 @@ class Evaluator:
 
         fig, axs = plt.subplots(1, 1)
 
+        image = self.getImage(1 / 100)
+
         im = axs.imshow(image)
 
         axs.set_yticklabels([])
@@ -105,12 +107,15 @@ class Evaluator:
         plt.axis('off')
 
         fig.canvas.draw()
+        fig.canvas.flush_events()
+
+        time.sleep(10)
 
         for i in range(0, 100, 1):
             print(i)
 
             image = self.getImage(i / 100)
-
             axs.imshow(image)
             fig.canvas.draw()
             fig.canvas.flush_events()
+            time.sleep(0.5)
